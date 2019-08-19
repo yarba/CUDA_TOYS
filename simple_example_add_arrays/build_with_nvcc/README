@@ -1,0 +1,66 @@
++-------------------------------------------------------------+
+|      How to compose, build, and run CUDA/GPU examples       |
++-------------------------------------------------------------+
+
+1. This exercise is based on the example from the following link:
+
+   https://devblogs.nvidia.com/even-easier-introduction-cuda  
+
+   Several things (setup, cmake, etc.) have been added.
+
+2. Example add_v0.cc
+
+   source setup-cuda.sh
+
+   It builds as follows:
+   
+   g++ add_v0.cc -o add_v0
+      
+3. Example add_v1.cu
+
+   This example shows how to run (part of) the calculations
+   on a GPU, using some CUDA directives
+   
+   Assuming that everything is set up, it builds as follows:
+   
+   nvcc add_v1.cu -o add_v1_cuda
+   
+   On the gpu1 node of the Wilson cluster, one can profiler it as follows:
+   
+   nvprof ./add_v1_cuda
+   
+   Among the output, this will produce the following information:
+   
+           Type  Time(%)      Time     Calls       Avg       Min       Max  Name
+GPU activities:  100.00%  371.22ms         1  371.22ms  371.22ms  371.22ms  add(int, float*, float*)  
+
+   I.e. it takes 371ms to sum up (more than) 1M of elements from 2 arrays
+   
+4. Example add_v2.cu
+
+   This example shows how to parallelize the calculations over 
+   256 threads, assuming that they're all in one block
+   
+   It can be compiled and profiled similar to add_v1.cu
+   
+   The (gpu1) profiling output will contain the following information:
+
+ GPU activities:  100.00%  2.4181ms         1  2.4181ms  2.4181ms  2.4181ms  add(int, float*, float*)
+ 
+   I.e. the execution time drops from 371ms to 2.4ms because we're using 
+   256 threads instead of just 1 
+
+5. Example add_v3.cu
+
+   This example shows how to get the number of threads large enough 
+   to process in parallel all (more than) 1M elements from 2 arrays
+   We pick up threads from multiple blocks.
+   In addition it prints thread id and block id, just as an exercise
+   
+   This example builds and profiles similar to add_v2, and the output 
+   contains the following:
+   
+GPU activities:  100.00%  1.1466ms         1  1.1466ms  1.1466ms  1.1466ms  add(int, float*, float*)
+
+   NOTE: This includes time needed for printouts; without it, time will be lower.
+   

@@ -1,0 +1,44 @@
++---------------------------------------------------+
+|      How to build and run CUDA/GPU examples       |
++---------------------------------------------------+
+
+1. This exercise is based on the example from the following link:
+
+   https://devblogs.nvidia.com/even-easier-introduction-cuda  
+
+   Several things (setup, cmake, etc.) have been added.
+
+2. It is basically the same as ../build_with_nvcc/add_v3.cu example
+   but instead of building it directly with nvcc, here we use cmake.
+   
+   Setup the environment:
+   
+   source setup-cuda.sh
+   
+   (it'll setup gcc, nvcc, cmake ) 
+
+   Build it:
+
+   mkdir bin 
+   cd bin
+   cmake -DProject=add ..
+   make
+   
+3. Depending on the nvcc flags, one may or may not be able to **fully** profile 
+   the application with nvprof, i.e. nvprof will run but in some case it may not
+   be able to profile the **kernel(s)** which is actually the most interesting part.
+   See comments in CMakeLists.txt on this matter.
+   
+4. Other cmake options (that I haven't tried yet)
+
+   4.1 separate compilation option:
+       set(CUDA_SEPARABLE_COMPILATION ON)
+   4.2 debug mode
+       add "-G -lineinfo" to CUDA_NVCC_FLAGS 
+   4.3 sm for Optix and Microarchitecture
+       -arch=sm_61 (Pascal - P100)
+       
+5. If one wants to submit to batch (instead of running interactively on Wilson/gpu node),
+   here an example:
+   
+   sbatch --nodes=1 -p gpu --gres=gpu:1 --nodelist=gpu4 --time=1:00:00 -A g4p <your-exec>
