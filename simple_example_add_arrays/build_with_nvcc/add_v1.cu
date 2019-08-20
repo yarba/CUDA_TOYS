@@ -50,8 +50,20 @@ int main(void)
   // float* y = new float[N];
   //
   // alocate memory in CUDA
-  // it's Unified Memory that's accessible
-  // from CPU and/or GPU 
+  // it's ** Unified Memory ** accessible from CPU and/or GPU
+  //
+  // NOTE: (as seen in many other examples) one can use 
+  //       cudaMalloc but that will allocate memory on the ** GPU ** 
+  //       e.g.
+  //       int* dev_x, dev_y;
+  //       cudaMalloc( &dev_x, N*sizeof(int) );
+  //       cudaMalloc( &dev_y, N*sizeof(int) );
+  //       but then one should also copy arrays x and y to the GPU:
+  //       cudaMemcpy( dev_x, x, N*sizeof(int), cudaMemoryHostToDevice );
+  //       cudaMemcpy( dev_x, x, N*sizeof(int), cudaMemoryHostToDevice );
+  //       and at the end (after running add(...)) one should copy 
+  //       the new content of y back to CPU:
+  //       cudaMemcpy( x, dev_x, N*sizeof(int), cudaMemoryDeviceToHost );
   //
   float *x, *y;
   cudaMallocManaged(&x, N*sizeof(float));

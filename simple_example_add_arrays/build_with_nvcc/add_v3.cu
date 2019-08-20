@@ -115,7 +115,11 @@ int main(void)
   // Last but not least !!!
   // Tell the *CPU* to wait until the kernel is done
   // before accessing results (because CUDA kernel lauches
-  // don't block calling CPU thread)
+  // don't block calling CPU thread, i.e. if a kernel is launched
+  // on a certain thread, control immediately returns to CPU;
+  // this is different from memory management which is synch-ed
+  // "by nature", i.e. nothing is launched untill all transfers
+  // are complete)
   //
   cudaDeviceSynchronize();
 
